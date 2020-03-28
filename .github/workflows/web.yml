@@ -9,21 +9,28 @@ jobs:
     name: Build
     runs-on: ubuntu-latest
     steps:
-      - name: build docker image
-        run: docker build -t pringon/diaspora-hub .
+      name: Publish Docker
+      on: [push]
+      jobs:
+        build:
+          runs-on: ubuntu-latest
+          steps:
+          - uses: actions/checkout@master
+          - name: Publish to Registry
+            uses: HurricanKai/Publish-Docker-Github-Action@master
+            with:
+              name: pringon/diaspora-hub
+              username: ${{ secrets.DOCKER_USERNAME }}
+              password: ${{ secrets.DOCKER_PASSWORD }}
 
-      - name: push image
-        run: docker push pringon/diaspora-hub:latest
+        deploy:
+          name: Deploy
+          runs-on: ubuntu-latest
+          steps:
+            - name: Write permission file
+              run: |
+                echo "${{ secrets.WEB_SERVER_PEM }}" > web-server.pem
+                chmod 400 web-server.pem
+            - name: Run command through ssh
+              run: ssh -i "web-server.pem" ubuntu@ec2-3-8-8-232.eu-west-2.compute.amazonaws.com 'docker run -ti -p 80:80 pringon/diaspora-hub'
 
-  deploy:
-    name: Deploy
-    runs-on: ubuntu-latest
-    steps:
-    - name: executing remote ssh commands using password
-      uses: appleboy/ssh-action@master
-      with:
-        host: ${{ secrets.HOST }}
-        username: ${{ secrets.USERNAME }}
-        password: ${{ secrets.PASSWORD }}
-        port: ${{ secrets.PORT }}
-        script: whoami
