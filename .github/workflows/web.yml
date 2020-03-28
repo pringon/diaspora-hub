@@ -1,7 +1,8 @@
-name: remote ssh command
+name: Deploy to Webserver
+
 on: 
-push:
-    branches: [master, develop]
+  push:
+      branches: [master, develop]
 
 jobs:
   build:
