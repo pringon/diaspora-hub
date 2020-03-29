@@ -21,14 +21,10 @@ jobs:
     runs-on: ubuntu-latest
     needs: build
     steps:
-      - name: Write permission file
-        env:
-          SSH_KEY: ${{secrets.WEB_SERVER_PEM}}
-        run: |
-          echo "$SSH_KEY" > web-server.pem
-          chmod 400 web-server.pem
-      - name: Run command through ssh
-        run: |
-          echo -e "Host *\n\tStrictHostKeyChecking no\n\n" > ~/.ssh/config
-          ssh -i "web-server.pem" ubuntu@ec2-3-8-8-232.eu-west-2.compute.amazonaws.com 'docker kill diaspora-hub-server; docker run -ti --name diaspora-hub-server -p 80:80 pringon/diaspora-hub'
-
+      - name: Run a command remotely
+        uses: docker://evaneos/ssh-action:0.1.0
+        with:
+          hosts: ec2-3-8-8-232.eu-west-2.compute.amazonaws.com
+          user: ubuntu
+          private_key: ${{ secrets.WEB_SERVER_PEM }}
+          commands: docker kill diaspora-hub-server; docker run -ti --name diaspora-hub-server -p 80:80 pringon/diaspora-hub
