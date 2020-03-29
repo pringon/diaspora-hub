@@ -27,4 +27,4 @@ jobs:
           hosts: ec2-3-8-8-232.eu-west-2.compute.amazonaws.com
           user: ubuntu
           private_key: ${{ secrets.WEB_SERVER_PEM }}
-          commands: docker kill diaspora-hub-server; docker run -ti --name diaspora-hub-server -p 80:80 pringon/diaspora-hub
+          commands: docker kill diaspora-hub-server; docker run -ti --name diaspora-hub-server -p 80:80 pringon/diaspora-hub:develop
