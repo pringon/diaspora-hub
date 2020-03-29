@@ -28,5 +28,7 @@ jobs:
           echo "$SSH_KEY" > web-server.pem
           chmod 400 web-server.pem
       - name: Run command through ssh
-        run: ssh -i "web-server.pem" ubuntu@ec2-3-8-8-232.eu-west-2.compute.amazonaws.com 'docker kill diaspora-hub-server; docker run -ti --name diaspora-hub-server -p 80:80 pringon/diaspora-hub'
+        run: |
+          echo "StrictHostKeyChecking no" > ~/.ssh/config
+          ssh -i "web-server.pem" ubuntu@ec2-3-8-8-232.eu-west-2.compute.amazonaws.com 'docker kill diaspora-hub-server; docker run -ti --name diaspora-hub-server -p 80:80 pringon/diaspora-hub'
 
